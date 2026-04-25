@@ -1050,7 +1050,7 @@ type IconModule = {
 
 local FetchIcons, Icons = pcall(function()
     return (loadstring(
-        game:HttpGet("://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua")
+        game:HttpGet("https://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua")
     ) :: () -> IconModule)()
 end)
 
@@ -7575,6 +7575,10 @@ function Library:CreateWindow(WindowInfo)
                     end
 
                     TabboxHolder.Size = UDim2.new(1, 0, 0, (List.AbsoluteContentSize.Y / Library.DPIScale) + 49)
+                end
+
+                function Tab:AddTooltip(Text: string)
+                    Library:AddTooltip(Text, nil, Button)
                 end
 
                 function Tab:UpdateCorners()
