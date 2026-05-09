@@ -3251,6 +3251,13 @@ do
         return self
     end
 
+    function Funcs:AddTooltip(Text, DisabledText)
+        local HoverInstance = self.Holder or self.Base or self.TextLabel
+        if HoverInstance then
+            return Library:AddTooltip(Text, DisabledText, HoverInstance)
+        end
+    end
+
     BaseAddons.__index = Funcs
     BaseAddons.__namecall = function(_, Key, ...)
         return Funcs[Key](...)
