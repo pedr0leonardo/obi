@@ -5966,6 +5966,13 @@ do
         return DepGroupbox
     end
 
+    function Funcs:AddTooltip(Text, DisabledText)
+    local HoverInstance = self.Holder or self.Base or self.TextLabel
+    if HoverInstance then
+        return Library:AddTooltip(Text, DisabledText, HoverInstance)
+    end
+end
+
     BaseGroupbox.__index = Funcs
     BaseGroupbox.__namecall = function(_, Key, ...)
         return Funcs[Key](...)
