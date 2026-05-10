@@ -3258,6 +3258,29 @@ do
         end
     end
 
+    function AddDropdownTooltips(dropdown, tooltips)
+        -- tooltips = { ["ValueName"] = "Tooltip text", ... }
+        
+        local originalBuild = dropdown.BuildDropdownList
+        dropdown.BuildDropdownList = function(self)
+            originalBuild(self)
+            
+            -- after list is built, find the buttons and add tooltips
+            local menu = dropdown.Menu.Menu
+            for _, btn in pairs(menu:GetChildren()) do
+                if btn:IsA("TextButton") then
+                    local tooltipText = tooltips[btn.Text]
+                    if tooltipText then
+                        Library:AddTooltip(tooltipText, nil, btn)
+                    end
+                end
+            end
+        end
+        
+        -- rebuild now to apply tooltips to existing buttons
+        dropdown:BuildDropdownList()
+    end
+
     BaseAddons.__index = Funcs
     BaseAddons.__namecall = function(_, Key, ...)
         return Funcs[Key](...)
