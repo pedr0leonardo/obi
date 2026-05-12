@@ -7558,6 +7558,7 @@ function Library:CreateWindow(WindowInfo)
                 local Tab = {
                     ButtonHolder = Button,
                     Container = Container,
+                    Disabled = false,  -- add this
 
                     ButtonCovers = {
                         BottomCover = BottomCover,
@@ -7632,7 +7633,10 @@ function Library:CreateWindow(WindowInfo)
                     Tab:Show()
                 end
 
-                Button.MouseButton1Click:Connect(Tab.Show)
+                Button.MouseButton1Click:Connect(function()
+                    if Tab.Disabled then return end
+                    Tab:Show()
+                end)
 
                 setmetatable(Tab, BaseGroupbox)
 
@@ -7733,17 +7737,18 @@ function Library:CreateWindow(WindowInfo)
         end
 
         function Tab:SetDisabled(Disabled: boolean)
-            TabButton.BackgroundTransparency = Disabled and 0.5 or (Library.ActiveTab == Tab and 0 or 1)
-            TabLabel.TextTransparency = Disabled and 0.8 or (Library.ActiveTab == Tab and 0 or 0.5)
-            if TabIcon then
-                TabIcon.ImageTransparency = Disabled and 0.8 or (Library.ActiveTab == Tab and 0 or 0.5)
+            Tab.Disabled = Disabled  -- add this line
+            Button.BackgroundTransparency = Disabled and 0.5 or (Tabbox.ActiveTab == Tab and 1 or 0)
+            ButtonLabel.TextTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+            if ButtonIcon then
+                ButtonIcon.ImageTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
             end
 
-            TabButton.Active = not Disabled
+            Button.Active = not Disabled
 
-            if Disabled and Library.ActiveTab == Tab then
-                for _, OtherTab in pairs(Library.Tabs) do
-                    if OtherTab ~= Tab and not OtherTab.IsKeyTab then
+            if Disabled and Tabbox.ActiveTab == Tab then
+                for _, OtherTab in pairs(Tabbox.Tabs) do
+                    if OtherTab ~= Tab and OtherTab.ButtonHolder.Visible then
                         OtherTab:Show()
                         break
                     end
