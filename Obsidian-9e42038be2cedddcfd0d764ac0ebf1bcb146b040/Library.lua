@@ -7616,10 +7616,29 @@ function Library:CreateWindow(WindowInfo)
                     TabboxHolder.Size = UDim2.new(1, 0, 0, (List.AbsoluteContentSize.Y / Library.DPIScale) + 49)
                 end
 
+                function Tab:SetDisabled(Disabled: boolean)
+                    Button.BackgroundTransparency = Disabled and 0.5 or (Tabbox.ActiveTab == Tab and 1 or 0)
+                    ButtonLabel.TextTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+                    if ButtonIcon then
+                        ButtonIcon.ImageTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+                    end
+
+                    Button.Active = not Disabled
+
+                    if Disabled and Tabbox.ActiveTab == Tab then
+                        for _, OtherTab in pairs(Tabbox.Tabs) do
+                            if OtherTab ~= Tab and OtherTab.ButtonHolder.Visible then
+                                OtherTab:Show()
+                                break
+                            end
+                        end
+                    end
+                end
+
                 function Tab:AddTooltip(Text: string)
                     Library:AddTooltip(Text, nil, Button)
                 end
-
+                
                 function Tab:UpdateCorners()
                     LeftCover.Visible = TabIndex ~= 1
                     RightCover.Visible = TabIndex ~= TotalButtons
@@ -7756,8 +7775,27 @@ function Library:CreateWindow(WindowInfo)
             end
         end
 
+        function Tab:SetDisabled(Disabled: boolean)
+            Button.BackgroundTransparency = Disabled and 0.5 or (Tabbox.ActiveTab == Tab and 1 or 0)
+            ButtonLabel.TextTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+            if ButtonIcon then
+                ButtonIcon.ImageTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+            end
+
+            Button.Active = not Disabled
+
+            if Disabled and Tabbox.ActiveTab == Tab then
+                for _, OtherTab in pairs(Tabbox.Tabs) do
+                    if OtherTab ~= Tab and OtherTab.ButtonHolder.Visible then
+                        OtherTab:Show()
+                        break
+                    end
+                end
+            end
+        end
+
         function Tab:AddTooltip(Text: string)
-            Library:AddTooltip(Text, nil, TabButton)
+            Library:AddTooltip(Text, nil, Button)
         end
 
         --// Execution \\--
