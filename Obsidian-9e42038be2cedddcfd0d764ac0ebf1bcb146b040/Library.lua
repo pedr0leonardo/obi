@@ -7774,7 +7774,7 @@ function Library:CreateWindow(WindowInfo)
         end
 
         function Tab:AddTooltip(Text: string)
-            Library:AddTooltip(Text, nil, TabButton)
+            Library:AddTooltip(Text, nil, Tab.ButtonHolder)
         end
 
         --// Execution \\--
