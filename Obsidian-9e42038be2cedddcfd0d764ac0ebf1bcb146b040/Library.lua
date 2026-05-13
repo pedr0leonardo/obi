@@ -7558,18 +7558,18 @@ function Library:CreateWindow(WindowInfo)
                 local Tab = {
                     ButtonHolder = Button,
                     Container = Container,
-                    Disabled = false,  -- add this
-
+                    Disabled = false,
                     ButtonCovers = {
                         BottomCover = BottomCover,
                         LeftCover = LeftCover,
                         RightCover = RightCover
                     },
-
                     Tab = Tab,
                     Elements = {},
                     DependencyBoxes = {},
                 }
+
+                setmetatable(Tab, BaseGroupbox)  -- move it here
 
                 function Tab:Show()
                     if Tabbox.ActiveTab then
@@ -7628,6 +7628,24 @@ function Library:CreateWindow(WindowInfo)
                     RightCover.Size = UDim2.new(0, WindowInfo.CornerRadius, 1, 0)
                 end
 
+                function Tab:SetDisabled(Disabled: boolean)
+                    Tab.Disabled = Disabled
+                    Button.Active = not Disabled
+                    Button.BackgroundTransparency = Disabled and 0.5 or (Tabbox.ActiveTab == Tab and 1 or 0)
+                    ButtonLabel.TextTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+                    if ButtonIcon then
+                        ButtonIcon.ImageTransparency = Disabled and 0.8 or (Tabbox.ActiveTab == Tab and 0 or 0.5)
+                    end
+                    if Disabled and Tabbox.ActiveTab == Tab then
+                        for _, OtherTab in pairs(Tabbox.Tabs) do
+                            if OtherTab ~= Tab and OtherTab.ButtonHolder.Visible then
+                                OtherTab:Show()
+                                break
+                            end
+                        end
+                    end
+                end
+
                 --// Execution \\--
                 if not Tabbox.ActiveTab then
                     Tab:Show()
@@ -7638,7 +7656,6 @@ function Library:CreateWindow(WindowInfo)
                     Tab:Show()
                 end)
 
-                setmetatable(Tab, BaseGroupbox)
 
                 Tabbox.Tabs[Name] = Tab
                 Tabbox:UpdateCorners()
@@ -7757,7 +7774,7 @@ function Library:CreateWindow(WindowInfo)
         end
 
         function Tab:AddTooltip(Text: string)
-            Library:AddTooltip(Text, nil, Button)
+            Library:AddTooltip(Text, nil, TabButton)
         end
 
         --// Execution \\--
