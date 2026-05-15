@@ -3252,12 +3252,12 @@ do
     end
 
     function Funcs:AddTooltip(Text, DisabledText)
-        local HoverInstance = self.Holder or self.Base or self.TextLabel
+        local HoverInstance = self.ButtonHolder or self.Holder or self.Base or self.TextLabel
         if HoverInstance then
             return Library:AddTooltip(Text, DisabledText, HoverInstance)
         end
     end
-
+    
     function AddDropdownTooltips(dropdown, tooltips)
         -- tooltips = { ["ValueName"] = "Tooltip text", ... }
         
@@ -5999,11 +5999,12 @@ do
     end
 
     function Funcs:AddTooltip(Text, DisabledText)
-    local HoverInstance = self.Holder or self.Base or self.TextLabel
-    if HoverInstance then
-        return Library:AddTooltip(Text, DisabledText, HoverInstance)
+        local HoverInstance = self.ButtonHolder or self.Holder or self.Base or self.TextLabel
+        if HoverInstance then
+            return Library:AddTooltip(Text, DisabledText, HoverInstance)
+        end
     end
-end
+
 
     BaseGroupbox.__index = Funcs
     BaseGroupbox.__namecall = function(_, Key, ...)
@@ -7774,7 +7775,7 @@ function Library:CreateWindow(WindowInfo)
         end
 
         function Tab:AddTooltip(Text: string)
-            Library:AddTooltip(Text, nil, Button)
+            Library:AddTooltip(Text, nil, TabButton)
         end
 
         --// Execution \\--
