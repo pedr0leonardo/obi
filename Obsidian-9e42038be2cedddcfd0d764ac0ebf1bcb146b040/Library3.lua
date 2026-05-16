@@ -4506,7 +4506,7 @@ do
         })
 
         local Fill = New("Frame", {
-            BackgroundColor3 = "AccentColor",
+            BackgroundColor3 = Color3.fromRGB(143, 53, 255),
             Size = UDim2.fromScale(0.5, 1),
             Parent = Bar,
         })
@@ -6294,7 +6294,7 @@ function Library:Notify(...)
         Parent = TimerHolder,
     })
     TimerFill = New("Frame", {
-        BackgroundColor3 = "AccentColor",
+        BackgroundColor3 = Color3.fromRGB(143, 53, 255),
         Size = UDim2.fromScale(1, 1),
         Parent = TimerBar,
     })
@@ -8471,7 +8471,7 @@ function Library:CreateWindow(WindowInfo)
             local ProgressBar
             if WaitTime > 0 then
                 ProgressBar = New("Frame", {
-                    BackgroundColor3 = "AccentColor",
+                    BackgroundColor3 = Color3.fromRGB(143, 53, 255),
                     BorderSizePixel = 0,
                     Position = UDim2.new(0, 0, 1, -2),
                     Size = UDim2.new(0, 0, 0, 2),
@@ -9089,7 +9089,7 @@ function Library:CreateLoading(LoadingInfo)
     table.insert(Library.Corners, New("UICorner", { CornerRadius = UDim.new(0, Library.CornerRadius / 2), Parent = SliderBar }))
 
     local SliderFill = New("Frame", {
-        BackgroundColor3 = "AccentColor",
+        BackgroundColor3 = Color3.fromRGB(143, 53, 255),
         BorderSizePixel = 0,
         Size = UDim2.fromScale(0, 1),
         Parent = SliderBar,
