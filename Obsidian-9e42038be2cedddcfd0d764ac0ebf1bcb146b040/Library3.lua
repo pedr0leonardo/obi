@@ -5135,9 +5135,11 @@ do
         Dropdown.Holder = Holder
         table.insert(Groupbox.Elements, Dropdown)
 
-        Dropdown.Default = Defaults
+        ropdown.Default = Defaults
         Dropdown.DefaultValues = Dropdown.Values
         Dropdown.Idx = Idx
+
+        setmetatable(Dropdown, BaseAddons)
 
         Options[Idx] = Dropdown
 
