@@ -8746,7 +8746,7 @@ function Library:CreateWindow(WindowInfo)
     do
         local ToggleBtnTexture = "rbxassetid://87227163199096"
         local ToggleBtnSize = 56
-        local ToggleBtnIconSize = 56
+        local ToggleBtnIconSize = 50
 
         local ToggleBtnFrame = New("ImageButton", {
             AnchorPoint = Vector2.new(0.5, 0),
@@ -8777,7 +8777,7 @@ function Library:CreateWindow(WindowInfo)
             BackgroundTransparency = 1,
             Image = ToggleBtnTexture,
             ImageColor3 = Color3.new(1, 1, 1),
-            Position = UDim2.fromScale(0.5, 0.8),
+            Position = UDim2.fromScale(0.5, 0.5),
             Size = UDim2.fromOffset(ToggleBtnIconSize, ToggleBtnIconSize),
             ZIndex = 10,
             Parent = ToggleBtnFrame,
