@@ -203,6 +203,8 @@ do
             end
         end
 
+        -- preserve accent color
+        Library.Scheme.AccentColor = Color3.fromRGB(255, 160, 182)
         self.Library:UpdateColorsUsingRegistry()
     end
 
@@ -241,6 +243,7 @@ do
 
         if isDefault then
             self.Library.Options.ThemeManager_ThemeList:SetValue(theme)
+            self:ApplyTheme(theme)
         else
             self:ApplyTheme(theme)
         end
@@ -342,7 +345,7 @@ do
                 local char = file:sub(pos, pos)
                 while char ~= "/" and char ~= "\\" and char ~= "" do
                     pos = pos - 1
-                    char = file:sub(pos, pos)
+                    char = file:sub(pos, pos)  
                 end
 
                 if char == "/" or char == "\\" then
