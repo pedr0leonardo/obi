@@ -9426,7 +9426,7 @@ local function OnPlayerChange()
     local PlayerList, ExcludedPlayerList = GetPlayers(), GetPlayers(true)
     for _, Dropdown in Options do
         if Dropdown.Type == "Dropdown" and Dropdown.SpecialType == "Player" then
-            Dropdown:SetValues(Dropdown.ExcludeLocalPlayer and ExcludedPlayerList or PlayerList)a
+            Dropdown:SetValues(Dropdown.ExcludeLocalPlayer and ExcludedPlayerList or PlayerList)
         end
     end
 end
