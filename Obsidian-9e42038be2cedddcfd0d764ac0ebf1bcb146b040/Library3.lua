@@ -5139,6 +5139,23 @@ do
         Dropdown.DefaultValues = Dropdown.Values
         Dropdown.Idx = Idx
 
+        function Dropdown:AddDropdownTooltips(tooltips)
+            local menu = self.Menu
+            if not menu then return end
+            menu.Menu:GetPropertyChangedSignal("Visible"):Connect(function()
+                if menu.Menu.Visible then
+                    for _, btn in pairs(menu.Menu:GetChildren()) do
+                        if btn:IsA("TextButton") then
+                            local tooltipText = tooltips[btn.Text]
+                            if tooltipText then
+                                Library:AddTooltip(tooltipText, nil, btn)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+
         Options[Idx] = Dropdown
 
         return Dropdown
