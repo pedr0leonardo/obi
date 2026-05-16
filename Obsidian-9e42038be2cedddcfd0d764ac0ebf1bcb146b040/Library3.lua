@@ -3248,20 +3248,21 @@ do
 
     function Funcs:AddDropdownTooltips(tooltips)
         local dropdown = self
-        local originalBuild = dropdown.BuildDropdownList
-        dropdown.BuildDropdownList = function(self)
-            originalBuild(self)
-            local menu = dropdown.Menu.Menu
-            for _, btn in pairs(menu:GetChildren()) do
-                if btn:IsA("TextButton") then
-                    local tooltipText = tooltips[btn.Text]
-                    if tooltipText then
-                        Library:AddTooltip(tooltipText, nil, btn)
+        local menu = dropdown.Menu
+        if not menu then return end
+        
+        menu:GetPropertyChangedSignal("Visible"):Connect(function()
+            if menu.Visible then
+                for _, btn in pairs(menu:GetDescendants()) do
+                    if btn:IsA("TextButton") then
+                        local tooltipText = tooltips[btn.Text]
+                        if tooltipText then
+                            Library:AddTooltip(tooltipText, nil, btn)
+                        end
                     end
                 end
             end
-        end
-        dropdown:BuildDropdownList()
+        end)
     end
 
     
