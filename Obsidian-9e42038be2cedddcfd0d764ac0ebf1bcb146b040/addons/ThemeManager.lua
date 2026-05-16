@@ -40,7 +40,7 @@ end
 
 local ThemeManager = {}
 do
-    local ThemeFields = { "FontColor", "MainColor", "BackgroundColor", "OutlineColor" }
+    local ThemeFields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
     ThemeManager.Folder = "ObsidianLibSettings"
     -- if not isfolder(ThemeManager.Folder) then makefolder(ThemeManager.Folder) end
 
@@ -49,75 +49,75 @@ do
     ThemeManager.BuiltInThemes = {
         ["Default"] = {
             1,
-            { FontColor = "ffffff", MainColor = "191919", BackgroundColor = "0f0f0f", OutlineColor = "282828" },
+            { FontColor = "ffffff", MainColor = "191919", AccentColor = "8F35FF", BackgroundColor = "0f0f0f", OutlineColor = "282828" },
         },
         ["BBot"] = {
             2,
-            { FontColor = "ffffff", MainColor = "1e1e1e", BackgroundColor = "232323", OutlineColor = "141414" },
+            { FontColor = "ffffff", MainColor = "1e1e1e", AccentColor = "8F35FF", BackgroundColor = "232323", OutlineColor = "141414" },
         },
         ["Fatality"] = {
             3,
-            { FontColor = "ffffff", MainColor = "1e1842", BackgroundColor = "191335", OutlineColor = "3c355d" },
+            { FontColor = "ffffff", MainColor = "1e1842", AccentColor = "8F35FF", BackgroundColor = "191335", OutlineColor = "3c355d" },
         },
         ["Jester"] = {
             4,
-            { FontColor = "ffffff", MainColor = "242424", BackgroundColor = "1c1c1c", OutlineColor = "373737" },
+            { FontColor = "ffffff", MainColor = "242424", AccentColor = "8F35FF", BackgroundColor = "1c1c1c", OutlineColor = "373737" },
         },
         ["Mint"] = {
             5,
-            { FontColor = "ffffff", MainColor = "242424", BackgroundColor = "1c1c1c", OutlineColor = "373737" },
+            { FontColor = "ffffff", MainColor = "242424", AccentColor = "8F35FF", BackgroundColor = "1c1c1c", OutlineColor = "373737" },
         },
         ["Tokyo Night"] = {
             6,
-            { FontColor = "ffffff", MainColor = "191925", BackgroundColor = "16161f", OutlineColor = "323232" },
+            { FontColor = "ffffff", MainColor = "191925", AccentColor = "8F35FF", BackgroundColor = "16161f", OutlineColor = "323232" },
         },
         ["Ubuntu"] = {
             7,
-            { FontColor = "ffffff", MainColor = "3e3e3e", BackgroundColor = "323232", OutlineColor = "191919" },
+            { FontColor = "ffffff", MainColor = "3e3e3e", AccentColor = "8F35FF", BackgroundColor = "323232", OutlineColor = "191919" },
         },
         ["Quartz"] = {
             8,
-            { FontColor = "ffffff", MainColor = "232330", BackgroundColor = "1d1b26", OutlineColor = "27232f" },
+            { FontColor = "ffffff", MainColor = "232330", AccentColor = "8F35FF", BackgroundColor = "1d1b26", OutlineColor = "27232f" },
         },
         ["Nord"] = {
             9,
-            { FontColor = "eceff4", MainColor = "3b4252", BackgroundColor = "2e3440", OutlineColor = "4c566a" },
+            { FontColor = "eceff4", MainColor = "3b4252", AccentColor = "8F35FF", BackgroundColor = "2e3440", OutlineColor = "4c566a" },
         },
         ["Dracula"] = {
             10,
-            { FontColor = "f8f8f2", MainColor = "44475a", BackgroundColor = "282a36", OutlineColor = "6272a4" },
+            { FontColor = "f8f8f2", MainColor = "44475a", AccentColor = "8F35FF", BackgroundColor = "282a36", OutlineColor = "6272a4" },
         },
         ["Monokai"] = {
             11,
-            { FontColor = "f8f8f2", MainColor = "272822", BackgroundColor = "1e1f1c", OutlineColor = "49483e" },
+            { FontColor = "f8f8f2", MainColor = "272822", AccentColor = "8F35FF", BackgroundColor = "1e1f1c", OutlineColor = "49483e" },
         },
         ["Gruvbox"] = {
             12,
-            { FontColor = "ebdbb2", MainColor = "3c3836", BackgroundColor = "282828", OutlineColor = "504945" },
+            { FontColor = "ebdbb2", MainColor = "3c3836", AccentColor = "8F35FF", BackgroundColor = "282828", OutlineColor = "504945" },
         },
         ["Solarized"] = {
             13,
-            { FontColor = "839496", MainColor = "073642", BackgroundColor = "002b36", OutlineColor = "586e75" },
+            { FontColor = "839496", MainColor = "073642", AccentColor = "8F35FF", BackgroundColor = "002b36", OutlineColor = "586e75" },
         },
         ["Catppuccin"] = {
             14,
-            { FontColor = "d9e0ee", MainColor = "302d41", BackgroundColor = "1e1e2e", OutlineColor = "575268" },
+            { FontColor = "d9e0ee", MainColor = "302d41", AccentColor = "8F35FF", BackgroundColor = "1e1e2e", OutlineColor = "575268" },
         },
         ["One Dark"] = {
             15,
-            { FontColor = "abb2bf", MainColor = "282c34", BackgroundColor = "21252b", OutlineColor = "5c6370" },
+            { FontColor = "abb2bf", MainColor = "282c34", AccentColor = "8F35FF", BackgroundColor = "21252b", OutlineColor = "5c6370" },
         },
         ["Cyberpunk"] = {
             16,
-            { FontColor = "f9f9f9", MainColor = "262335", BackgroundColor = "1a1a2e", OutlineColor = "413c5e" },
+            { FontColor = "f9f9f9", MainColor = "262335", AccentColor = "8F35FF", BackgroundColor = "1a1a2e", OutlineColor = "413c5e" },
         },
         ["Oceanic Next"] = {
             17,
-            { FontColor = "d8dee9", MainColor = "1b2b34", BackgroundColor = "16232a", OutlineColor = "343d46" },
+            { FontColor = "d8dee9", MainColor = "1b2b34", AccentColor = "8F35FF", BackgroundColor = "16232a", OutlineColor = "343d46" },
         },
         ["Material"] = {
             18,
-            { FontColor = "eeffff", MainColor = "212121", BackgroundColor = "151515", OutlineColor = "424242" },
+            { FontColor = "eeffff", MainColor = "212121", AccentColor = "8F35FF", BackgroundColor = "151515", OutlineColor = "424242" },
         }
     }
 
@@ -203,8 +203,6 @@ do
             end
         end
 
-        -- preserve accent color
-        Library.Scheme.AccentColor = Color3.fromRGB(255, 160, 182)
         self.Library:UpdateColorsUsingRegistry()
     end
 
@@ -243,7 +241,6 @@ do
 
         if isDefault then
             self.Library.Options.ThemeManager_ThemeList:SetValue(theme)
-            self:ApplyTheme(theme)
         else
             self:ApplyTheme(theme)
         end
@@ -345,7 +342,7 @@ do
                 local char = file:sub(pos, pos)
                 while char ~= "/" and char ~= "\\" and char ~= "" do
                     pos = pos - 1
-                    char = file:sub(pos, pos)  
+                    char = file:sub(pos, pos)
                 end
 
                 if char == "/" or char == "\\" then
@@ -363,6 +360,7 @@ do
             :AddLabel("Background color")
             :AddColorPicker("BackgroundColor", { Default = self.Library.Scheme.BackgroundColor })
         groupbox:AddLabel("Main color"):AddColorPicker("MainColor", { Default = self.Library.Scheme.MainColor })
+        groupbox:AddLabel("Accent color"):AddColorPicker("AccentColor", { Default = self.Library.Scheme.AccentColor })
         groupbox
             :AddLabel("Outline color")
             :AddColorPicker("OutlineColor", { Default = self.Library.Scheme.OutlineColor })
@@ -481,6 +479,7 @@ do
 
         self.Library.Options.BackgroundColor:OnChanged(UpdateTheme)
         self.Library.Options.MainColor:OnChanged(UpdateTheme)
+        self.Library.Options.AccentColor:OnChanged(UpdateTheme)
         self.Library.Options.OutlineColor:OnChanged(UpdateTheme)
         self.Library.Options.FontColor:OnChanged(UpdateTheme)
         self.Library.Options.FontFace:OnChanged(function(Value)
