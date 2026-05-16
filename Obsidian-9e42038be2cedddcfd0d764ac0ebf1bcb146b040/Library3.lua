@@ -4506,7 +4506,7 @@ do
         })
 
         local Fill = New("Frame", {
-            BackgroundColor3 = Color3.fromRGB(143, 53, 255),
+            BackgroundColor3 = "AccentColor",
             Size = UDim2.fromScale(0.5, 1),
             Parent = Bar,
         })
