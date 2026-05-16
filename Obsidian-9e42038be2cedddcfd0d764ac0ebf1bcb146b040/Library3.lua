@@ -5145,24 +5145,20 @@ do
             local menu = self.Menu
             if not menu then return end
             
-            local function applyTooltips()
-                for _, btn in pairs(menu.Menu:GetChildren()) do
-                    if btn:IsA("TextButton") then
-                        local tooltipText = tooltips[btn.Text]
-                        if tooltipText and not btn:GetAttribute("_hasTooltip") then
-                            btn:SetAttribute("_hasTooltip", true)
-                            Library:AddTooltip(tooltipText, nil, btn)
+            local applied = false
+            menu.Menu:GetPropertyChangedSignal("Visible"):Connect(function()
+                if menu.Menu.Visible and not applied then
+                    applied = true
+                    for _, btn in pairs(menu.Menu:GetDescendants()) do
+                        if btn:IsA("TextButton") then
+                            local tooltipText = tooltips[btn.Text]
+                            if tooltipText then
+                                Library:AddTooltip(tooltipText, nil, btn)
+                            end
                         end
                     end
                 end
-            end
-            
-            menu.Menu.ChildAdded:Connect(function()
-                task.wait()
-                applyTooltips()
             end)
-            
-            applyTooltips()
         end
 
         Options[Idx] = Dropdown
