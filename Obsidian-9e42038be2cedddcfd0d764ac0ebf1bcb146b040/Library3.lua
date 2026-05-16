@@ -342,29 +342,26 @@ local Templates = {
         Title = "Dialog",
         Description = "Description",
         AutoDismiss = true,
+        AutoDestroy = false,
         OutsideClickDismiss = true,
-        FooterButtons = {}
+        FooterButtons = {},
+        OnShow = nil,
+        OnDismiss = nil,
+        OnDestroy = nil,
+        Width = nil,
+        MaxHeight = nil,
+        StartHidden = false,
     },
-    Loading = {
-        Title = "mspaint",
-        Icon = 95816097006870,
-        IconSize = UDim2.fromOffset(30, 30),
-
-        LoadingIcon = CustomImageManager.GetAsset("LoadingIcon"),
-        LoadingIconColor = nil,
-        LoadingIconTweenTime = 1,
-
-        CurrentStep = 0,
-        TotalSteps = 10,
-
-        ShowSidebar = false,
-        AutoResizeHeight = false,
-
-        WindowWidth = 450,
-        WindowHeight = 275,
-
-        ContentWidth = 450,
-        SidebarWidth = 250,
+    List = {
+        Text = nil,
+        Items = {},
+        Multi = false,
+        MaxHeight = 150,
+        EmptyText = "No items",
+        Callback = function() end,
+        Changed = function() end,
+        Disabled = false,
+        Visible = true,
     },
     Toggle = {
         Text = "Toggle",
@@ -383,14 +380,12 @@ local Templates = {
         Finished = false,
         Numeric = false,
         ClearTextOnFocus = true,
-        ClearTextOnBlur = false,
         Placeholder = "",
         AllowEmpty = true,
         EmptyReset = "---",
 
         Callback = function() end,
         Changed = function() end,
-        VerifyValue = nil,
 
         Disabled = false,
         Visible = true,
@@ -460,15 +455,8 @@ local Templates = {
     --// Addons \\-
     KeyPicker = {
         Text = "KeyPicker",
-
         Default = "None",
         DefaultModifiers = {},
-
-        Blacklisted = {},
-        BlacklistedModifiers = {},
-        Whitelisted = {},
-        WhitelistedModifiers = {},
-
         Mode = "Toggle",
         Modes = { "Always", "Toggle", "Hold" },
         SyncToggleState = false,
@@ -3257,15 +3245,12 @@ do
             return Library:AddTooltip(Text, DisabledText, HoverInstance)
         end
     end
-    
-    function AddDropdownTooltips(dropdown, tooltips)
-        -- tooltips = { ["ValueName"] = "Tooltip text", ... }
-        
+
+    function Funcs:AddDropdownTooltips(tooltips)
+        local dropdown = self
         local originalBuild = dropdown.BuildDropdownList
         dropdown.BuildDropdownList = function(self)
             originalBuild(self)
-            
-            -- after list is built, find the buttons and add tooltips
             local menu = dropdown.Menu.Menu
             for _, btn in pairs(menu:GetChildren()) do
                 if btn:IsA("TextButton") then
@@ -3276,8 +3261,6 @@ do
                 end
             end
         end
-        
-        -- rebuild now to apply tooltips to existing buttons
         dropdown:BuildDropdownList()
     end
 
@@ -4764,7 +4747,6 @@ do
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
             Visible = not not Info.Text,
-            ZIndex = 3,
             Parent = Holder,
         })
 
@@ -4772,12 +4754,13 @@ do
             Active = not Dropdown.Disabled,
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
+            BorderColor3 = "OutlineColor",
+            BorderSizePixel = 1,
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 21),
             Text = "---",
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
-            ZIndex = 2,
             Parent = Holder,
         })
 
@@ -4786,24 +4769,6 @@ do
             PaddingRight = UDim.new(0, 4),
             Parent = Display,
         })
-
-        New("UIStroke", {
-            Color = "OutlineColor",
-            Parent = Display,
-        })
-
-        if Library.CornerRadiusDropdown == true then
-            table.insert(
-                Library.Corners,
-                New("UICorner", {
-                    CornerRadius = UDim.new(0, Library.CornerRadius / 2),
-                    Parent = Display,
-                })
-            )
-        end
-
-        -- Dropdowns cant currently use corner radius since the button is supposed to be connected with the menu
-        -- This can be done properly without some random frames and overlaying textlabel over the button after Roblox adds UICorner with specific corner radiuses
 
         local ArrowImage = New("ImageLabel", {
             AnchorPoint = Vector2.new(1, 0.5),
@@ -4853,7 +4818,7 @@ do
                     SearchBox.Visible = Active
                 end
             end,
-            true
+            Groupbox.IsDialog and 9010 or nil
         )
         Dropdown.Menu = MenuTable
 
@@ -4936,13 +4901,11 @@ do
 
             local Count = 0
             for _, Value in Values do
-                local FormattedValue = tostring(Info.FormatListValue and Info.FormatListValue(Value) or Value)
-                if SearchBox and not FormattedValue:lower():match(SearchBox.Text:lower()) then
+                if SearchBox and not string.find(tostring(Value):lower(), SearchBox.Text:lower(), 1, true) then
                     continue
                 end
 
                 Count += 1
-
                 local IsDisabled = table.find(DisabledValues, Value)
                 local Table = {}
 
@@ -4951,7 +4914,7 @@ do
                     BackgroundTransparency = 1,
                     LayoutOrder = IsDisabled and 1 or 0,
                     Size = UDim2.new(1, 0, 0, 21),
-                    Text = FormattedValue,
+                    Text = tostring(Value),
                     TextSize = 14,
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
@@ -5173,6 +5136,7 @@ do
 
         Dropdown.Default = Defaults
         Dropdown.DefaultValues = Dropdown.Values
+        Dropdown.Idx = Idx
 
         Options[Idx] = Dropdown
 
