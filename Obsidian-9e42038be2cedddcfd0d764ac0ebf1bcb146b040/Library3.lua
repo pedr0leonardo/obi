@@ -3246,7 +3246,7 @@ do
         end
     end
     
-        function Funcs:AddDropdownTooltips(tooltips)
+    function Funcs:AddDropdownTooltips(tooltips)
         local dropdown = self
         local menu = dropdown.Menu
         if not menu then return end
