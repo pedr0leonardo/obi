@@ -3251,9 +3251,11 @@ do
         local menu = dropdown.Menu
         if not menu then return end
         
-        menu:GetPropertyChangedSignal("Visible"):Connect(function()
-            if menu.Visible then
-                for _, btn in pairs(menu:GetDescendants()) do
+        local applied = false
+        menu.Menu:GetPropertyChangedSignal("Visible"):Connect(function()
+            if menu.Menu.Visible and not applied then
+                applied = true
+                for _, btn in pairs(menu.Menu:GetDescendants()) do
                     if btn:IsA("TextButton") then
                         local tooltipText = tooltips[btn.Text]
                         if tooltipText then
