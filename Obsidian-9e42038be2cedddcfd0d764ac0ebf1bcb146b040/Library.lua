@@ -4752,7 +4752,6 @@ do
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
             Visible = not not Info.Text,
-            ZIndex = 3,
             Parent = Holder,
         })
 
@@ -4760,12 +4759,13 @@ do
             Active = not Dropdown.Disabled,
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
+            BorderColor3 = "OutlineColor",
+            BorderSizePixel = 1,
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 21),
             Text = "---",
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
-            ZIndex = 2,
             Parent = Holder,
         })
 
@@ -4774,24 +4774,6 @@ do
             PaddingRight = UDim.new(0, 4),
             Parent = Display,
         })
-
-        New("UIStroke", {
-            Color = "OutlineColor",
-            Parent = Display,
-        })
-
-        if Library.CornerRadiusDropdown == true then
-            table.insert(
-                Library.Corners,
-                New("UICorner", {
-                    CornerRadius = UDim.new(0, Library.CornerRadius / 2),
-                    Parent = Display,
-                })
-            )
-        end
-
-        -- Dropdowns cant currently use corner radius since the button is supposed to be connected with the menu
-        -- This can be done properly without some random frames and overlaying textlabel over the button after Roblox adds UICorner with specific corner radiuses
 
         local ArrowImage = New("ImageLabel", {
             AnchorPoint = Vector2.new(1, 0.5),
@@ -4841,7 +4823,7 @@ do
                     SearchBox.Visible = Active
                 end
             end,
-            true
+            Groupbox.IsDialog and 9010 or nil
         )
         Dropdown.Menu = MenuTable
 
@@ -4924,13 +4906,11 @@ do
 
             local Count = 0
             for _, Value in Values do
-                local FormattedValue = tostring(Info.FormatListValue and Info.FormatListValue(Value) or Value)
-                if SearchBox and not FormattedValue:lower():match(SearchBox.Text:lower()) then
+                if SearchBox and not string.find(tostring(Value):lower(), SearchBox.Text:lower(), 1, true) then
                     continue
                 end
 
                 Count += 1
-
                 local IsDisabled = table.find(DisabledValues, Value)
                 local Table = {}
 
@@ -4939,7 +4919,7 @@ do
                     BackgroundTransparency = 1,
                     LayoutOrder = IsDisabled and 1 or 0,
                     Size = UDim2.new(1, 0, 0, 21),
-                    Text = FormattedValue,
+                    Text = tostring(Value),
                     TextSize = 14,
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
@@ -5161,6 +5141,7 @@ do
 
         Dropdown.Default = Defaults
         Dropdown.DefaultValues = Dropdown.Values
+        Dropdown.Idx = Idx
 
         Options[Idx] = Dropdown
 
