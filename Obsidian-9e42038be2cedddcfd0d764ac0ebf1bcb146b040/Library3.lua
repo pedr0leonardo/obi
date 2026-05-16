@@ -4537,8 +4537,9 @@ do
             end
             DisplayLabel.TextTransparency = Slider.Disabled and 0.8 or 0
 
-            Fill.BackgroundColor3 = Slider.Disabled and Library.Scheme.OutlineColor or Color3.fromRGB(143, 53, 255)
-            Library.Registry[Fill].BackgroundColor3 = Slider.Disabled and "OutlineColor" or Color3.fromRGB(143, 53, 255)
+            Fill.BackgroundColor3 = Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
+            Library.Registry[Fill] = Library.Registry[Fill] or {}
+            Library.Registry[Fill].BackgroundColor3 = Slider.Disabled and "OutlineColor" or "AccentColor"
         end
 
         function Slider:Display()
