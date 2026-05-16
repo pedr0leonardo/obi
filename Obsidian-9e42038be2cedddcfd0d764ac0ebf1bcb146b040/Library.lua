@@ -221,7 +221,7 @@ local Library = {
     Scheme = {
         BackgroundColor = Color3.fromRGB(15, 15, 15),
         MainColor = Color3.fromRGB(25, 25, 25),
-        AccentColor = Color3.fromRGB(143, 53, 255),
+        AccentColor = Color3.fromRGB(125, 85, 255),
         OutlineColor = Color3.fromRGB(40, 40, 40),
         FontColor = Color3.new(1, 1, 1),
         Font = Font.fromEnum(Enum.Font.Code),
@@ -342,26 +342,29 @@ local Templates = {
         Title = "Dialog",
         Description = "Description",
         AutoDismiss = true,
-        AutoDestroy = false,
         OutsideClickDismiss = true,
-        FooterButtons = {},
-        OnShow = nil,
-        OnDismiss = nil,
-        OnDestroy = nil,
-        Width = nil,
-        MaxHeight = nil,
-        StartHidden = false,
+        FooterButtons = {}
     },
-    List = {
-        Text = nil,
-        Items = {},
-        Multi = false,
-        MaxHeight = 150,
-        EmptyText = "No items",
-        Callback = function() end,
-        Changed = function() end,
-        Disabled = false,
-        Visible = true,
+    Loading = {
+        Title = "mspaint",
+        Icon = 95816097006870,
+        IconSize = UDim2.fromOffset(30, 30),
+
+        LoadingIcon = CustomImageManager.GetAsset("LoadingIcon"),
+        LoadingIconColor = nil,
+        LoadingIconTweenTime = 1,
+
+        CurrentStep = 0,
+        TotalSteps = 10,
+
+        ShowSidebar = false,
+        AutoResizeHeight = false,
+
+        WindowWidth = 450,
+        WindowHeight = 275,
+
+        ContentWidth = 450,
+        SidebarWidth = 250,
     },
     Toggle = {
         Text = "Toggle",
@@ -380,12 +383,14 @@ local Templates = {
         Finished = false,
         Numeric = false,
         ClearTextOnFocus = true,
+        ClearTextOnBlur = false,
         Placeholder = "",
         AllowEmpty = true,
         EmptyReset = "---",
 
         Callback = function() end,
         Changed = function() end,
+        VerifyValue = nil,
 
         Disabled = false,
         Visible = true,
@@ -455,8 +460,15 @@ local Templates = {
     --// Addons \\-
     KeyPicker = {
         Text = "KeyPicker",
+
         Default = "None",
         DefaultModifiers = {},
+
+        Blacklisted = {},
+        BlacklistedModifiers = {},
+        Whitelisted = {},
+        WhitelistedModifiers = {},
+
         Mode = "Toggle",
         Modes = { "Always", "Toggle", "Hold" },
         SyncToggleState = false,
@@ -4752,6 +4764,7 @@ do
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
             Visible = not not Info.Text,
+            ZIndex = 3,
             Parent = Holder,
         })
 
@@ -4759,13 +4772,12 @@ do
             Active = not Dropdown.Disabled,
             AnchorPoint = Vector2.new(0, 1),
             BackgroundColor3 = "MainColor",
-            BorderColor3 = "OutlineColor",
-            BorderSizePixel = 1,
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 21),
             Text = "---",
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 2,
             Parent = Holder,
         })
 
@@ -4774,6 +4786,24 @@ do
             PaddingRight = UDim.new(0, 4),
             Parent = Display,
         })
+
+        New("UIStroke", {
+            Color = "OutlineColor",
+            Parent = Display,
+        })
+
+        if Library.CornerRadiusDropdown == true then
+            table.insert(
+                Library.Corners,
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, Library.CornerRadius / 2),
+                    Parent = Display,
+                })
+            )
+        end
+
+        -- Dropdowns cant currently use corner radius since the button is supposed to be connected with the menu
+        -- This can be done properly without some random frames and overlaying textlabel over the button after Roblox adds UICorner with specific corner radiuses
 
         local ArrowImage = New("ImageLabel", {
             AnchorPoint = Vector2.new(1, 0.5),
@@ -4823,7 +4853,7 @@ do
                     SearchBox.Visible = Active
                 end
             end,
-            Groupbox.IsDialog and 9010 or nil
+            true
         )
         Dropdown.Menu = MenuTable
 
@@ -4906,11 +4936,13 @@ do
 
             local Count = 0
             for _, Value in Values do
-                if SearchBox and not string.find(tostring(Value):lower(), SearchBox.Text:lower(), 1, true) then
+                local FormattedValue = tostring(Info.FormatListValue and Info.FormatListValue(Value) or Value)
+                if SearchBox and not FormattedValue:lower():match(SearchBox.Text:lower()) then
                     continue
                 end
 
                 Count += 1
+
                 local IsDisabled = table.find(DisabledValues, Value)
                 local Table = {}
 
@@ -4919,7 +4951,7 @@ do
                     BackgroundTransparency = 1,
                     LayoutOrder = IsDisabled and 1 or 0,
                     Size = UDim2.new(1, 0, 0, 21),
-                    Text = tostring(Value),
+                    Text = FormattedValue,
                     TextSize = 14,
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
@@ -5141,7 +5173,6 @@ do
 
         Dropdown.Default = Defaults
         Dropdown.DefaultValues = Dropdown.Values
-        Dropdown.Idx = Idx
 
         Options[Idx] = Dropdown
 
@@ -6263,7 +6294,7 @@ function Library:Notify(...)
         Parent = TimerHolder,
     })
     TimerFill = New("Frame", {
-        BackgroundColor3 = Color3.fromRGB(143, 53, 255),
+        BackgroundColor3 = "AccentColor",
         Size = UDim2.fromScale(1, 1),
         Parent = TimerBar,
     })
@@ -6414,36 +6445,6 @@ function Library:CreateWindow(WindowInfo)
             })
         )
         Library:AddOutline(MainFrame)
-        local NeonColor = Color3.fromRGB(143, 53, 255)
-        local GlowLayers = {
-            { Thickness = 1,   Transparency = 0.15 },
-            { Thickness = 1.5, Transparency = 0.4 },
-            { Thickness = 2,   Transparency = 0.6 },
-            { Thickness = 3,   Transparency = 0.75 },
-            { Thickness = 4.5, Transparency = 0.87 },
-            { Thickness = 6,   Transparency = 0.94 },
-        }
-        for i, layer in GlowLayers do
-            local GlowFrame = New("Frame", {
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                BackgroundTransparency = 1,
-                Position = UDim2.fromScale(0.5, 0.5),
-                Size = UDim2.new(1, layer.Thickness * 2, 1, layer.Thickness * 2),
-                ZIndex = MainFrame.ZIndex - i,
-                Parent = MainFrame,
-            })
-            table.insert(Library.Corners, New("UICorner", {
-                CornerRadius = UDim.new(0, WindowInfo.CornerRadius + layer.Thickness),
-                Parent = GlowFrame,
-            }))
-            New("UIStroke", {
-                Color = NeonColor,
-                Thickness = layer.Thickness,
-                Transparency = layer.Transparency,
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                Parent = GlowFrame,
-            })
-        end
         Library:MakeLine(MainFrame, {
             Position = UDim2.fromOffset(0, 48),
             Size = UDim2.new(1, 0, 0, 1),
@@ -6949,7 +6950,7 @@ function Library:CreateWindow(WindowInfo)
             if Icon then
                 TabIcon = New("ImageLabel", {
                     Image = Icon.Url,
-                    ImageColor3 = Color3.fromRGB(143, 53, 255),
+                    ImageColor3 = Icon.Custom and "WhiteColor" or "AccentColor",
                     ImageRectOffset = Icon.ImageRectOffset,
                     ImageRectSize = Icon.ImageRectSize,
                     ImageTransparency = 0.5,
@@ -7301,7 +7302,7 @@ function Library:CreateWindow(WindowInfo)
                 if BoxIcon then
                     New("ImageLabel", {
                         Image = BoxIcon.Url,
-                        ImageColor3 = Color3.fromRGB(143, 53, 255),
+                        ImageColor3 = BoxIcon.Custom and "WhiteColor" or "AccentColor",
                         ImageRectOffset = BoxIcon.ImageRectOffset,
                         ImageRectSize = BoxIcon.ImageRectSize,
                         Position = UDim2.fromOffset(6, 6),
@@ -7511,7 +7512,7 @@ function Library:CreateWindow(WindowInfo)
                 if BoxIcon then
                     ButtonIcon = New("ImageLabel", {
                         Image = BoxIcon.Url,
-                        ImageColor3 = Color3.fromRGB(143, 53, 255),
+                        ImageColor3 = BoxIcon.Custom and "WhiteColor" or "AccentColor",
                         ImageRectOffset = BoxIcon.ImageRectOffset,
                         ImageRectSize = BoxIcon.ImageRectSize,
                         ImageTransparency = 0.5,
@@ -7851,7 +7852,7 @@ function Library:CreateWindow(WindowInfo)
             if Icon then
                 TabIcon = New("ImageLabel", {
                     Image = Icon.Url,
-                    ImageColor3 = Color3.fromRGB(143, 53, 255),
+                    ImageColor3 = Icon.Custom and "WhiteColor" or "AccentColor",
                     ImageRectOffset = Icon.ImageRectOffset,
                     ImageRectSize = Icon.ImageRectSize,
                     ImageTransparency = 0.5,
@@ -8440,7 +8441,7 @@ function Library:CreateWindow(WindowInfo)
             local ProgressBar
             if WaitTime > 0 then
                 ProgressBar = New("Frame", {
-                    BackgroundColor3 = Color3.fromRGB(143, 53, 255),
+                    BackgroundColor3 = "AccentColor",
                     BorderSizePixel = 0,
                     Position = UDim2.new(0, 0, 1, -2),
                     Size = UDim2.new(0, 0, 0, 2),
@@ -8712,86 +8713,6 @@ function Library:CreateWindow(WindowInfo)
         Library:UpdateSearch(SearchBox.Text)
     end)
 
-    do
-        local ToggleBtnTexture = "rbxassetid://87227163199096"
-        local ToggleBtnSize = 56
-        local ToggleBtnIconSize = 56
-
-        local ToggleBtnFrame = New("ImageButton", {
-            AnchorPoint = Vector2.new(0.5, 0),
-            BackgroundColor3 = "BackgroundColor",
-            Position = UDim2.new(0.5, 0, 0, 6),
-            Size = UDim2.fromOffset(ToggleBtnSize, ToggleBtnSize),
-            AutoButtonColor = false,
-            ZIndex = 10,
-            Parent = ScreenGui,
-        })
-        New("UICorner", { CornerRadius = UDim.new(1, 0), Parent = ToggleBtnFrame })
-
-        local ToggleBtnOutline = New("UIStroke", {
-            Color = Library.Toggled and "AccentColor" or "OutlineColor",
-            Thickness = Library.Toggled and 1.5 or 1,
-            ZIndex = 2,
-            Parent = ToggleBtnFrame,
-        })
-        New("UIStroke", {
-            Color = "DarkColor",
-            Thickness = 1.5,
-            ZIndex = 1,
-            Parent = ToggleBtnFrame,
-        })
-
-        local ToggleBtnIcon = New("ImageLabel", {
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Image = ToggleBtnTexture,
-            ImageColor3 = Color3.new(1, 1, 1),
-            Position = UDim2.new(0.5, 0, 0.5, 3), -- nudge 3px down
-            Size = UDim2.fromOffset(ToggleBtnIconSize, ToggleBtnIconSize),
-            ZIndex = 10,
-            Parent = ToggleBtnFrame,
-        })
-
-        local ToggleBtnAnimInfo = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        local ToggleBtnFadeInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
-        local function UpdateToggleButton(SkipAnim)
-            local IsOpen = Library.Toggled
-            Library.Registry[ToggleBtnOutline] = Library.Registry[ToggleBtnOutline] or {}
-            Library.Registry[ToggleBtnOutline].Color = IsOpen and "AccentColor" or "OutlineColor"
-            local TargetOutlineColor = IsOpen and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
-
-            if SkipAnim then
-                ToggleBtnOutline.Color = TargetOutlineColor
-                ToggleBtnOutline.Thickness = IsOpen and 1.5 or 1
-            else
-                TweenService:Create(ToggleBtnOutline, ToggleBtnFadeInfo, {
-                    Color = TargetOutlineColor,
-                    Thickness = IsOpen and 1.5 or 1,
-                }):Play()
-                ToggleBtnIcon.Rotation = -90
-                ToggleBtnIcon.Size = UDim2.fromOffset(0, 0)
-                TweenService:Create(ToggleBtnIcon, ToggleBtnAnimInfo, {
-                    Rotation = 0,
-                    Size = UDim2.fromOffset(ToggleBtnIconSize, ToggleBtnIconSize),
-                }):Play()
-            end
-        end
-
-        ToggleBtnFrame.MouseButton1Click:Connect(function()
-            Library:Toggle()
-        end)
-        Library:MakeDraggable(ToggleBtnFrame, ToggleBtnFrame, true)
-
-        local OrigToggle = Library.Toggle
-        function Library:Toggle(Value)
-            OrigToggle(Library, Value)
-            UpdateToggleButton(false)
-        end
-
-        UpdateToggleButton(true)
-    end
-
     Library:GiveSignal(UserInputService.InputBegan:Connect(function(Input: InputObject)
         if Library.Unloaded then
             return
@@ -9058,7 +8979,7 @@ function Library:CreateLoading(LoadingInfo)
     table.insert(Library.Corners, New("UICorner", { CornerRadius = UDim.new(0, Library.CornerRadius / 2), Parent = SliderBar }))
 
     local SliderFill = New("Frame", {
-        BackgroundColor3 = Color3.fromRGB(143, 53, 255),
+        BackgroundColor3 = "AccentColor",
         BorderSizePixel = 0,
         Size = UDim2.fromScale(0, 1),
         Parent = SliderBar,
