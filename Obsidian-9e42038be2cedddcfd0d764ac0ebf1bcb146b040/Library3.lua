@@ -8777,7 +8777,7 @@ function Library:CreateWindow(WindowInfo)
             BackgroundTransparency = 1,
             Image = ToggleBtnTexture,
             ImageColor3 = Color3.new(1, 1, 1),
-            Position = UDim2.fromScale(0.5, 0.5),
+            Position = UDim2.fromScale(0.5, -1),
             Size = UDim2.fromOffset(ToggleBtnIconSize, ToggleBtnIconSize),
             ZIndex = 10,
             Parent = ToggleBtnFrame,
