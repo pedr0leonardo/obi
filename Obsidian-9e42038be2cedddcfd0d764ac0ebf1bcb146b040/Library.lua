@@ -6445,36 +6445,6 @@ function Library:CreateWindow(WindowInfo)
             })
         )
         Library:AddOutline(MainFrame)
-        local NeonColor = Color3.fromRGB(255, 160, 182)
-        local GlowLayers = {
-            { Thickness = 1,   Transparency = 0.15 },
-            { Thickness = 1.5, Transparency = 0.4 },
-            { Thickness = 2,   Transparency = 0.6 },
-            { Thickness = 3,   Transparency = 0.75 },
-            { Thickness = 4.5, Transparency = 0.87 },
-            { Thickness = 6,   Transparency = 0.94 },
-        }
-        for i, layer in GlowLayers do
-            local GlowFrame = New("Frame", {
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                BackgroundTransparency = 1,
-                Position = UDim2.fromScale(0.5, 0.5),
-                Size = UDim2.new(1, layer.Thickness * 2, 1, layer.Thickness * 2),
-                ZIndex = MainFrame.ZIndex - i,
-                Parent = MainFrame,
-            })
-            table.insert(Library.Corners, New("UICorner", {
-                CornerRadius = UDim.new(0, WindowInfo.CornerRadius + layer.Thickness),
-                Parent = GlowFrame,
-            }))
-            New("UIStroke", {
-                Color = NeonColor,
-                Thickness = layer.Thickness,
-                Transparency = layer.Transparency,
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                Parent = GlowFrame,
-            })
-        end
         Library:MakeLine(MainFrame, {
             Position = UDim2.fromOffset(0, 48),
             Size = UDim2.new(1, 0, 0, 1),
@@ -8742,86 +8712,6 @@ function Library:CreateWindow(WindowInfo)
     SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         Library:UpdateSearch(SearchBox.Text)
     end)
-
-    do
-        local ToggleBtnTexture = "rbxassetid://72530843154458"
-        local ToggleBtnSize = 56
-        local ToggleBtnIconSize = 45
-
-        local ToggleBtnFrame = New("ImageButton", {
-            AnchorPoint = Vector2.new(0.5, 0),
-            BackgroundColor3 = "BackgroundColor",
-            Position = UDim2.new(0.5, 0, 0, 6),
-            Size = UDim2.fromOffset(ToggleBtnSize, ToggleBtnSize),
-            AutoButtonColor = false,
-            ZIndex = 10,
-            Parent = ScreenGui,
-        })
-        New("UICorner", { CornerRadius = UDim.new(1, 0), Parent = ToggleBtnFrame })
-
-        local ToggleBtnOutline = New("UIStroke", {
-            Color = Library.Toggled and "AccentColor" or "OutlineColor",
-            Thickness = Library.Toggled and 1.5 or 1,
-            ZIndex = 2,
-            Parent = ToggleBtnFrame,
-        })
-        New("UIStroke", {
-            Color = "DarkColor",
-            Thickness = 1.5,
-            ZIndex = 1,
-            Parent = ToggleBtnFrame,
-        })
-
-        local ToggleBtnIcon = New("ImageLabel", {
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Image = ToggleBtnTexture,
-            ImageColor3 = Color3.new(1, 1, 1),
-            Position = UDim2.fromScale(0.5, 0.5),
-            Size = UDim2.fromOffset(ToggleBtnIconSize, ToggleBtnIconSize),
-            ZIndex = 10,
-            Parent = ToggleBtnFrame,
-        })
-
-        local ToggleBtnAnimInfo = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        local ToggleBtnFadeInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
-        local function UpdateToggleButton(SkipAnim)
-            local IsOpen = Library.Toggled
-            Library.Registry[ToggleBtnOutline] = Library.Registry[ToggleBtnOutline] or {}
-            Library.Registry[ToggleBtnOutline].Color = IsOpen and "AccentColor" or "OutlineColor"
-            local TargetOutlineColor = IsOpen and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
-
-            if SkipAnim then
-                ToggleBtnOutline.Color = TargetOutlineColor
-                ToggleBtnOutline.Thickness = IsOpen and 1.5 or 1
-            else
-                TweenService:Create(ToggleBtnOutline, ToggleBtnFadeInfo, {
-                    Color = TargetOutlineColor,
-                    Thickness = IsOpen and 1.5 or 1,
-                }):Play()
-                ToggleBtnIcon.Rotation = -90
-                ToggleBtnIcon.Size = UDim2.fromOffset(0, 0)
-                TweenService:Create(ToggleBtnIcon, ToggleBtnAnimInfo, {
-                    Rotation = 0,
-                    Size = UDim2.fromOffset(ToggleBtnIconSize, ToggleBtnIconSize),
-                }):Play()
-            end
-        end
-
-        ToggleBtnFrame.MouseButton1Click:Connect(function()
-            Library:Toggle()
-        end)
-        Library:MakeDraggable(ToggleBtnFrame, ToggleBtnFrame, true)
-
-        local OrigToggle = Library.Toggle
-        function Library:Toggle(Value)
-            OrigToggle(Library, Value)
-            UpdateToggleButton(false)
-        end
-
-        UpdateToggleButton(true)
-    end
 
     Library:GiveSignal(UserInputService.InputBegan:Connect(function(Input: InputObject)
         if Library.Unloaded then
