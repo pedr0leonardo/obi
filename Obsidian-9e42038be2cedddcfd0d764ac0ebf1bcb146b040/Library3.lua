@@ -5150,18 +5150,24 @@ do
                 originalOpen(self)
                 task.spawn(function()
                     while menu.Active do
+                        local hovering = false
                         for _, btn in pairs(menu.Menu:GetChildren()) do
                             if btn:IsA("TextButton") then
                                 local tooltipText = tooltips[btn.Text]
                                 if tooltipText and Library:MouseIsOverFrame(btn, Mouse) then
+                                    hovering = true
                                     TooltipLabel.Text = tooltipText
                                     TooltipLabel.Visible = true
                                     TooltipLabel.Position = UDim2.fromOffset(
                                         Mouse.X + (Library.ShowCustomCursor and 8 or 14),
                                         Mouse.Y + (Library.ShowCustomCursor and 8 or 12)
                                     )
+                                    break
                                 end
                             end
+                        end
+                        if not hovering then
+                            TooltipLabel.Visible = false
                         end
                         RunService.RenderStepped:Wait()
                     end
