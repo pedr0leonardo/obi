@@ -1986,7 +1986,7 @@ function Library:AddTooltip(InfoStr: string, DisabledInfoStr: string, HoverInsta
 
         while
             (Library.Toggled or Library.ActiveLoading)
-            and not Library.ActiveDialog
+            and (not Library.ActiveDialog or (Library.ActiveDialog and Library.ActiveDialog.Container:IsAncestorOf(HoverInstance)))
             and Library:MouseIsOverFrame(HoverInstance, Mouse)
             and not (CurrentMenu and Library:MouseIsOverFrame(CurrentMenu.Menu, Mouse) and not CurrentMenu.Menu:IsAncestorOf(HoverInstance))
         do
