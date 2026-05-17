@@ -1959,11 +1959,6 @@ function Library:AddTooltip(InfoStr: string, DisabledInfoStr: string, HoverInsta
     }
 
     local function DoHover()
-        if Library.ActiveDialog then
-            print("ActiveDialog:", Library.ActiveDialog)
-            print("Container:", Library.ActiveDialog.Container)
-            print("IsAncestor:", Library.ActiveDialog.Container:IsAncestorOf(HoverInstance))
-        end
         if
             CurrentHoverInstance == HoverInstance
             or (Library.ActiveDialog and not Library.ActiveDialog.Container:IsAncestorOf(HoverInstance))
