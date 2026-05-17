@@ -4825,6 +4825,13 @@ do
         )
         Dropdown.Menu = MenuTable
 
+        if Groupbox.IsDialog then
+            MenuTable.Menu.ZIndex = 9020
+            for _, child in pairs(MenuTable.Menu:GetDescendants()) do
+                child.ZIndex = 9020
+            end
+        end
+
         function Dropdown:RecalculateListSize(Count)
             local Y = math.clamp((Count or GetTableSize(Dropdown.Values)) * 21, 0, Info.MaxVisibleDropdownItems * 21)
 
@@ -4921,6 +4928,7 @@ do
                     TextSize = 14,
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
+                    ZIndex = Groupbox.IsDialog and 9020 or nil,
                     Parent = MenuTable.Menu,
                 })
                 New("UIPadding", {
