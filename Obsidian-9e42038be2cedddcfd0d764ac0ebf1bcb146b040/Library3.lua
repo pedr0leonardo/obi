@@ -4826,9 +4826,12 @@ do
         Dropdown.Menu = MenuTable
 
         if Groupbox.IsDialog then
-            MenuTable.Menu.ZIndex = 9020
+            MenuTable.Menu.ZIndex = 9500
+            MenuTable.Menu.DisplayOrder = 9500  -- this doesn't exist on frames but...
             for _, child in pairs(MenuTable.Menu:GetDescendants()) do
-                child.ZIndex = 9020
+                pcall(function()
+                    child.ZIndex = 9500
+                end)
             end
         end
 
