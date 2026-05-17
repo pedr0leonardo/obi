@@ -5145,14 +5145,14 @@ do
             local menu = self.Menu
             if not menu then return end
             
-            local applied = false
             menu.Menu:GetPropertyChangedSignal("Visible"):Connect(function()
-                if menu.Menu.Visible and not applied then
-                    applied = true
-                    for _, btn in pairs(menu.Menu:GetDescendants()) do
-                        if btn:IsA("TextButton") then
+                if menu.Menu.Visible then
+                    task.wait()
+                    for _, btn in pairs(menu.Menu:GetChildren()) do
+                        if btn:IsA("TextButton") and not btn:GetAttribute("_tooltip") then
                             local tooltipText = tooltips[btn.Text]
                             if tooltipText then
+                                btn:SetAttribute("_tooltip", true)
                                 Library:AddTooltip(tooltipText, nil, btn)
                             end
                         end
