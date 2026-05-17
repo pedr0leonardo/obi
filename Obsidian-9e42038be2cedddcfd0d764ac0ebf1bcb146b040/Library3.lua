@@ -1908,7 +1908,7 @@ local TooltipLabel = New("TextLabel", {
     TextSize = 14,
     TextWrapped = true,
     Visible = false,
-    ZIndex = 9999999,
+    ZIndex = 9600,
     Parent = ScreenGui,
 })
 New("UIPadding", {
