@@ -5145,26 +5145,20 @@ do
             local menu = self.Menu
             if not menu then return end
             
-            print("Menu:", menu)
-            print("Menu.Menu:", menu.Menu)
-            
-            menu.Menu:GetPropertyChangedSignal("Visible"):Connect(function()
-                print("Visible changed:", menu.Menu.Visible)
-                if menu.Menu.Visible then
-                    task.wait()
-                    for _, btn in pairs(menu.Menu:GetChildren()) do
-                        print("Child:", btn.Name, btn.ClassName)
-                        if btn:IsA("TextButton") then
-                            print("Button text:", btn.Text)
-                            local tooltipText = tooltips[btn.Text]
-                            if tooltipText then
-                                print("Adding tooltip for:", btn.Text)
-                                Library:AddTooltip(tooltipText, nil, btn)
-                            end
+            local originalOpen = menu.Open
+            menu.Open = function(self)
+                originalOpen(self)
+                task.wait()
+                for _, btn in pairs(menu.Menu:GetChildren()) do
+                    if btn:IsA("TextButton") and not btn:GetAttribute("_tooltip") then
+                        local tooltipText = tooltips[btn.Text]
+                        if tooltipText then
+                            btn:SetAttribute("_tooltip", true)
+                            Library:AddTooltip(tooltipText, nil, btn)
                         end
                     end
                 end
-            end)
+            end
         end
 
         Options[Idx] = Dropdown
