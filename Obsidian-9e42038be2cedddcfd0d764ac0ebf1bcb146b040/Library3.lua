@@ -6018,6 +6018,231 @@ do
         end
     end
 
+    function Funcs:AddTabbox(Name)
+        local Groupbox = self
+        local Container = Groupbox.Container
+
+        local TabboxHolder = New("Frame", {
+            BackgroundColor3 = "BackgroundColor",
+            Size = UDim2.fromScale(1, 0),
+            Parent = Container,
+        })
+        table.insert(Library.Corners, New("UICorner", {
+            CornerRadius = UDim.new(0, Library.CornerRadius),
+            Parent = TabboxHolder,
+        }))
+        Library:AddOutline(TabboxHolder)
+
+        local TabboxButtons = New("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 34),
+            Parent = TabboxHolder,
+        })
+        New("UIListLayout", {
+            FillDirection = Enum.FillDirection.Horizontal,
+            HorizontalFlex = Enum.UIFlexAlignment.Fill,
+            Parent = TabboxButtons,
+        })
+
+        local TotalButtons, TotalTabs = 0, 1
+        local Tabbox = {
+            ActiveTab = nil,
+            Holder = TabboxHolder,
+            Tabs = {},
+        }
+
+        function Tabbox:UpdateCorners()
+            for _, Tab in Tabbox.Tabs do
+                Tab:UpdateCorners()
+            end
+        end
+
+        function Tabbox:AddTab(TabName, IconName)
+            local TabIndex = TotalTabs
+            TotalButtons = TotalButtons + 1
+            TotalTabs = TotalTabs + 1
+
+            local BoxIcon = Library:GetCustomIcon(IconName)
+
+            local Button = New("TextButton", {
+                BackgroundColor3 = "MainColor",
+                BackgroundTransparency = 0,
+                Size = UDim2.fromOffset(0, 34),
+                Text = "",
+                Parent = TabboxButtons,
+            })
+            table.insert(Library.Corners, New("UICorner", {
+                CornerRadius = UDim.new(0, Library.CornerRadius),
+                Parent = Button,
+            }))
+
+            local BottomCover = New("Frame", {
+                Name = "BottomCover",
+                BackgroundColor3 = "MainColor",
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, 0, 1, -Library.CornerRadius),
+                Size = UDim2.new(1, 0, 0, Library.CornerRadius),
+                Parent = Button,
+            })
+            local LeftCover = New("Frame", {
+                Name = "LeftCover",
+                BackgroundColor3 = "MainColor",
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, 0, 0, 0),
+                Size = UDim2.new(0, Library.CornerRadius, 1, 0),
+                Visible = false,
+                Parent = Button,
+            })
+            local RightCover = New("Frame", {
+                Name = "RightCover",
+                AnchorPoint = Vector2.new(1, 0),
+                BackgroundColor3 = "MainColor",
+                BorderSizePixel = 0,
+                Position = UDim2.new(1, 0, 0, 0),
+                Size = UDim2.new(0, Library.CornerRadius, 1, 0),
+                Visible = false,
+                Parent = Button,
+            })
+
+            local ButtonContent = New("Frame", {
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                AutomaticSize = Enum.AutomaticSize.X,
+                BackgroundTransparency = 1,
+                Position = UDim2.fromScale(0.5, 0.5),
+                Size = UDim2.fromOffset(0, 16),
+                Parent = Button,
+            })
+            New("UIListLayout", {
+                FillDirection = Enum.FillDirection.Horizontal,
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+                Padding = UDim.new(0, 8),
+                Parent = ButtonContent,
+            })
+
+            local ButtonIcon
+            if BoxIcon then
+                ButtonIcon = New("ImageLabel", {
+                    Image = BoxIcon.Url,
+                    ImageColor3 = Color3.fromRGB(143, 53, 255),
+                    ImageRectOffset = BoxIcon.ImageRectOffset,
+                    ImageRectSize = BoxIcon.ImageRectSize,
+                    ImageTransparency = 0.5,
+                    Size = UDim2.fromOffset(16, 16),
+                    Parent = ButtonContent,
+                })
+            end
+
+            local ButtonLabel = New("TextLabel", {
+                AutomaticSize = Enum.AutomaticSize.X,
+                BackgroundTransparency = 1,
+                Size = UDim2.fromOffset(0, 16),
+                Text = TabName,
+                TextSize = 15,
+                TextTransparency = 0.5,
+                Parent = ButtonContent,
+            })
+
+            local Line = Library:MakeLine(Button, {
+                AnchorPoint = Vector2.new(0, 1),
+                Position = UDim2.new(0, 0, 1, 1),
+                Size = UDim2.new(1, 0, 0, 1),
+            })
+
+            local TabContainer = New("Frame", {
+                BackgroundTransparency = 1,
+                Position = UDim2.fromOffset(0, 35),
+                Size = UDim2.new(1, 0, 1, -35),
+                Visible = false,
+                Parent = TabboxHolder,
+            })
+            local List = New("UIListLayout", {
+                Padding = UDim.new(0, 8),
+                Parent = TabContainer,
+            })
+            New("UIPadding", {
+                PaddingBottom = UDim.new(0, 7),
+                PaddingLeft = UDim.new(0, 7),
+                PaddingRight = UDim.new(0, 7),
+                PaddingTop = UDim.new(0, 7),
+                Parent = TabContainer,
+            })
+
+            local Tab = {
+                ButtonHolder = Button,
+                Container = TabContainer,
+                Disabled = false,
+                Elements = {},
+                DependencyBoxes = {},
+            }
+
+            setmetatable(Tab, BaseGroupbox)
+
+            function Tab:Show()
+                if Tabbox.ActiveTab then
+                    Tabbox.ActiveTab:Hide()
+                end
+                Button.BackgroundTransparency = 1
+                BottomCover.BackgroundTransparency = 1
+                LeftCover.BackgroundTransparency = 1
+                RightCover.BackgroundTransparency = 1
+                ButtonLabel.TextTransparency = 0
+                if ButtonIcon then ButtonIcon.ImageTransparency = 0 end
+                Line.Visible = false
+                TabContainer.Visible = true
+                Tabbox.ActiveTab = Tab
+                Tab:Resize()
+            end
+
+            function Tab:Hide()
+                Button.BackgroundTransparency = 0
+                BottomCover.BackgroundTransparency = 0
+                LeftCover.BackgroundTransparency = 0
+                RightCover.BackgroundTransparency = 0
+                ButtonLabel.TextTransparency = 0.5
+                if ButtonIcon then ButtonIcon.ImageTransparency = 0.5 end
+                Line.Visible = true
+                TabContainer.Visible = false
+                Tabbox.ActiveTab = nil
+            end
+
+            function Tab:Resize()
+                if Tabbox.ActiveTab ~= Tab then return end
+                TabboxHolder.Size = UDim2.new(1, 0, 0, (List.AbsoluteContentSize.Y / Library.DPIScale) + 49)
+                Groupbox:Resize()
+            end
+
+            function Tab:UpdateCorners()
+                LeftCover.Visible = TabIndex ~= 1
+                RightCover.Visible = TabIndex ~= TotalButtons
+                BottomCover.Position = UDim2.new(0, 0, 1, -Library.CornerRadius)
+                BottomCover.Size = UDim2.new(1, 0, 0, Library.CornerRadius)
+                LeftCover.Size = UDim2.new(0, Library.CornerRadius, 1, 0)
+                RightCover.Size = UDim2.new(0, Library.CornerRadius, 1, 0)
+            end
+
+            if not Tabbox.ActiveTab then
+                Tab:Show()
+            end
+
+            Button.MouseButton1Click:Connect(function()
+                if Tab.Disabled then return end
+                Tab:Show()
+            end)
+
+            List:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                Tab:Resize()
+            end)
+
+            Tabbox.Tabs[TabName] = Tab
+            Tabbox:UpdateCorners()
+
+            return Tab
+        end
+
+        Groupbox:Resize()
+        return Tabbox
+    end
 
     BaseGroupbox.__index = Funcs
     BaseGroupbox.__namecall = function(_, Key, ...)
