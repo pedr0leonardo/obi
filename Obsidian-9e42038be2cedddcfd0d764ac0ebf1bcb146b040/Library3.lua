@@ -5148,16 +5148,25 @@ do
             local originalOpen = menu.Open
             menu.Open = function(self)
                 originalOpen(self)
-                task.wait()
-                for _, btn in pairs(menu.Menu:GetChildren()) do
-                    if btn:IsA("TextButton") and not btn:GetAttribute("_tooltip") then
-                        local tooltipText = tooltips[btn.Text]
-                        if tooltipText then
-                            btn:SetAttribute("_tooltip", true)
-                            Library:AddTooltip(tooltipText, nil, btn)
+                task.spawn(function()
+                    while menu.Active do
+                        for _, btn in pairs(menu.Menu:GetChildren()) do
+                            if btn:IsA("TextButton") then
+                                local tooltipText = tooltips[btn.Text]
+                                if tooltipText and Library:MouseIsOverFrame(btn, Mouse) then
+                                    TooltipLabel.Text = tooltipText
+                                    TooltipLabel.Visible = true
+                                    TooltipLabel.Position = UDim2.fromOffset(
+                                        Mouse.X + (Library.ShowCustomCursor and 8 or 14),
+                                        Mouse.Y + (Library.ShowCustomCursor and 8 or 12)
+                                    )
+                                end
+                            end
                         end
+                        RunService.RenderStepped:Wait()
                     end
-                end
+                    TooltipLabel.Visible = false
+                end)
             end
         end
 
