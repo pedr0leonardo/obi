@@ -7684,7 +7684,7 @@ function Library:CreateWindow(WindowInfo)
             toggleBtn.BackgroundTransparency = 1
             toggleBtn.Size = UDim2.new(0, 20, 0, 20)
             toggleBtn.AnchorPoint = Vector2.new(1, 0.5)
-            toggleBtn.Position = UDim2.new(1, -8, 0.5, 0)
+            toggleBtn.Position = UDim2.new(1, -8, 0, 17)  -- changed from 0.5 to 0, 17 to align with header
             toggleBtn.Text = DefaultOpen and "▲" or "▼"
             toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
             toggleBtn.TextTransparency = 0.5
