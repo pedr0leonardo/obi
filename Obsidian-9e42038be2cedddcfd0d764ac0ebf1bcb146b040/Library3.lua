@@ -3279,6 +3279,37 @@ local BaseGroupbox = {}
 do
     local Funcs = {}
 
+    function Funcs:AddCollapsibleGroupbox(Side, Name, IconName, DefaultOpen)
+        DefaultOpen = DefaultOpen ~= false
+        local Tab = self
+        local gb = Side == "left" and Tab:AddLeftGroupbox(Name, IconName) or Tab:AddRightGroupbox(Name, IconName)
+
+        local toggleBtn = Instance.new("TextButton")
+        toggleBtn.BackgroundTransparency = 1
+        toggleBtn.Size = UDim2.new(0, 20, 0, 20)
+        toggleBtn.AnchorPoint = Vector2.new(1, 0.5)
+        toggleBtn.Position = UDim2.new(1, -8, 0.5, 0)
+        toggleBtn.Text = DefaultOpen and "▲" or "▼"
+        toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        toggleBtn.TextTransparency = 0.5
+        toggleBtn.TextSize = 12
+        toggleBtn.Font = Enum.Font.Code
+        toggleBtn.ZIndex = gb.Holder.ZIndex + 1
+        toggleBtn.Parent = gb.Holder
+
+        local isOpen = DefaultOpen
+        gb.Container.Visible = isOpen
+
+        toggleBtn.MouseButton1Click:Connect(function()
+            isOpen = not isOpen
+            gb.Container.Visible = isOpen
+            toggleBtn.Text = isOpen and "▲" or "▼"
+            gb:Resize()
+        end)
+
+        return gb
+    end
+
     function Funcs:AddDivider(...)
         local Params = select(1, ...)
         local Text
