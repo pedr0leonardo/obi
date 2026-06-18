@@ -7680,27 +7680,90 @@ function Library:CreateWindow(WindowInfo)
             DefaultOpen = DefaultOpen ~= false
             local gb = Side == "left" and Tab:AddLeftGroupbox(Name, IconName) or Tab:AddRightGroupbox(Name, IconName)
 
-            local toggleBtn = Instance.new("TextButton")
+            local TweenService = game:GetService("TweenService")
+            local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+            local ChevronUp = Library:GetIcon("chevron-up")
+            local ChevronDown = Library:GetIcon("chevron-down")
+
+            local toggleBtn = Instance.new("ImageButton")
             toggleBtn.BackgroundTransparency = 1
-            toggleBtn.Size = UDim2.new(0, 20, 0, 20)
+            toggleBtn.Size = UDim2.new(0, 16, 0, 16)
             toggleBtn.AnchorPoint = Vector2.new(1, 0.5)
-            toggleBtn.Position = UDim2.new(1, -8, 0, 17)  -- changed from 0.5 to 0, 17 to align with header
-            toggleBtn.Text = DefaultOpen and "▲" or "▼"
-            toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            toggleBtn.TextTransparency = 0.5
-            toggleBtn.TextSize = 12
-            toggleBtn.Font = Enum.Font.Code
+            toggleBtn.Position = UDim2.new(1, -8, 0, 17)
+            toggleBtn.Image = ChevronUp and ChevronUp.Url or ""
+            toggleBtn.ImageRectOffset = ChevronUp and ChevronUp.ImageRectOffset or Vector2.zero
+            toggleBtn.ImageRectSize = ChevronUp and ChevronUp.ImageRectSize or Vector2.zero
+            toggleBtn.ImageColor3 = Color3.fromRGB(255, 255, 255)
+            toggleBtn.ImageTransparency = 0.5
             toggleBtn.ZIndex = gb.Holder.ZIndex + 1
             toggleBtn.Parent = gb.Holder
 
             local isOpen = DefaultOpen
-            gb.Container.Visible = isOpen
+            local isAnimating = false
+
+            local function setIcon(open)
+                local icon = open and ChevronUp or ChevronDown
+                if not icon then return end
+                toggleBtn.Image = icon.Url
+                toggleBtn.ImageRectOffset = icon.ImageRectOffset
+                toggleBtn.ImageRectSize = icon.ImageRectSize
+            end
+
+            if not DefaultOpen then
+                setIcon(false)
+                gb.Container.Visible = false
+                gb.Holder.Size = UDim2.new(1, 0, 0, 34)
+            end
+
+            local function setOpen(open)
+                if isAnimating then return end
+                isAnimating = true
+                isOpen = open
+
+                setIcon(open)
+
+                TweenService:Create(toggleBtn, tweenInfo, {
+                    ImageTransparency = open and 0.5 or 0,
+                }):Play()
+
+                if open then
+                    gb.Container.Visible = true
+                    gb:Resize()
+                    local targetSize = gb.Holder.Size
+
+                    gb.Holder.Size = UDim2.new(1, 0, 0, 34)
+                    TweenService:Create(gb.Holder, tweenInfo, {
+                        Size = targetSize,
+                    }):Play()
+                else
+                    local closeTween = TweenService:Create(gb.Holder, tweenInfo, {
+                        Size = UDim2.new(1, 0, 0, 34),
+                    })
+                    closeTween:Play()
+                    closeTween.Completed:Connect(function()
+                        gb.Container.Visible = false
+                    end)
+                end
+
+                task.delay(tweenInfo.Time, function()
+                    isAnimating = false
+                end)
+            end
 
             toggleBtn.MouseButton1Click:Connect(function()
-                isOpen = not isOpen
-                gb.Container.Visible = isOpen
-                toggleBtn.Text = isOpen and "▲" or "▼"
-                gb:Resize()
+                setOpen(not isOpen)
+            end)
+
+            toggleBtn.MouseEnter:Connect(function()
+                TweenService:Create(toggleBtn, TweenInfo.new(0.1), {
+                    ImageTransparency = 0,
+                }):Play()
+            end)
+            toggleBtn.MouseLeave:Connect(function()
+                TweenService:Create(toggleBtn, TweenInfo.new(0.1), {
+                    ImageTransparency = isOpen and 0.5 or 0,
+                }):Play()
             end)
 
             return gb
