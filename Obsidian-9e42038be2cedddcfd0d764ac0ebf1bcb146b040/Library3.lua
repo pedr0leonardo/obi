@@ -7737,13 +7737,11 @@ function Library:CreateWindow(WindowInfo)
                         Size = targetSize,
                     }):Play()
                 else
+                    gb.Container.Visible = false
                     local closeTween = TweenService:Create(gb.Holder, tweenInfo, {
                         Size = UDim2.new(1, 0, 0, 34),
                     })
                     closeTween:Play()
-                    closeTween.Completed:Connect(function()
-                        gb.Container.Visible = false
-                    end)
                 end
 
                 task.delay(tweenInfo.Time, function()
